@@ -9,6 +9,15 @@ Parte 1
 [x] - Adicionando Assets no Canvas
 [x] - Criacao do Fighter (Player)
 
+Parte 2
+
+[x] - Criacao do Player (Ryu)
+[x] - Adicionando Velocidades
+[x] - Adicionado Estado do Player
+[x] - Adicionando Animacoes
+[x] - Adicionando Background
+[ ] - Adicionando Oponente
+
 ### Links uteis
 
 Assets - https://www.spriters-resource.com/arcade/streetfighter2/

@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_flight_game/constants/fighter_data.dart';
 import 'package:flutter_flight_game/constants/game_data.dart';
-import 'package:flutter_flight_game/fighters/fighter.dart';
+import 'package:flutter_flight_game/fighters/ryu.dart';
 import 'package:flutter_flight_game/game_board.dart';
+import 'package:flutter_flight_game/stages/ken_stage.dart';
 import 'package:flutter_flight_game/types/frame_time.dart';
-import 'package:flutter_flight_game/types/sprite_sheet.dart';
 import 'package:flutter_flight_game/types/vector.dart';
-import 'package:flutter_flight_game/utils/assets.dart';
 
 class Game extends StatefulWidget {
   const Game({super.key});
@@ -18,18 +19,9 @@ class Game extends StatefulWidget {
 class _GameState extends State<Game> {
   final frameTime = FrameTime(0, 0);
 
-  final ryu = Fighter(
-    spriteSheet: AssetsUtil.ryuSpriteSheet,
-    position: Vector(100, 100),
-    velocity: Vector(0, 0),
-    sprites: [
-      Sprite(75, 14, 60, 89, anchor: Vector(34, 86)),
-      Sprite(7, 14, 59, 90, anchor: Vector(33, 87)),
-      Sprite(277, 11, 58, 92, anchor: Vector(32, 89)),
-      Sprite(211, 10, 55, 93, anchor: Vector(31, 90)),
-      Sprite(277, 11, 58, 92, anchor: Vector(32, 89)),
-      Sprite(7, 14, 59, 90, anchor: Vector(33, 87)),
-    ],
+  final ryu = Ryu(
+    direction: FighterDir.RIGHT,
+    position: Vector(200, GameData.GAME_FLOOR),
   );
 
   void _frame(Duration timeStamp) {
@@ -74,15 +66,20 @@ class _GameState extends State<Game> {
           title: Text("FPS: ${frameTime.fps}"),
         ),
         body: Center(
-          child: Transform.scale(
-            scale: GameData.GAME_SCALE,
-            child: ColoredBox(
-              color: Colors.black,
-              child: CustomPaint(
-                size: GameData.GAME_VIEWPORT,
-                painter: GameBoard(
-                  frameTime: frameTime,
-                  player1: ryu,
+          child: Focus(
+            autofocus: true,
+            onKeyEvent: _keyListener,
+            child: Transform.scale(
+              scale: GameData.GAME_SCALE,
+              child: ColoredBox(
+                color: Colors.black,
+                child: CustomPaint(
+                  size: GameData.GAME_VIEWPORT,
+                  painter: GameBoard(
+                    stage: KenStage(),
+                    frameTime: frameTime,
+                    player1: ryu,
+                  ),
                 ),
               ),
             ),
@@ -90,5 +87,26 @@ class _GameState extends State<Game> {
         ),
       ),
     );
+  }
+
+  KeyEventResult _keyListener(FocusNode node, KeyEvent event) {
+    final pressed = HardwareKeyboard.instance.isLogicalKeyPressed(event.logicalKey);
+    if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+      if (pressed) {
+        ryu.changeState(FighterState.WALK_BACK);
+      } else {
+        ryu.changeState(FighterState.IDLE);
+      }
+    } else if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
+      if (pressed) {
+        ryu.changeState(FighterState.WALK_FRONT);
+      } else {
+        ryu.changeState(FighterState.IDLE);
+      }
+    } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+      ryu.changeState(FighterState.JUMP_UP);
+    }
+
+    return KeyEventResult.handled;
   }
 }
