@@ -21,7 +21,12 @@ class _GameState extends State<Game> {
 
   final ryu = Ryu(
     direction: FighterDir.RIGHT,
-    position: Vector(200, GameData.GAME_FLOOR),
+    position: Vector(50, GameData.GAME_FLOOR),
+  );
+  final ken = Ryu(
+    name: "ken",
+    direction: FighterDir.LEFT,
+    position: Vector(300, GameData.GAME_FLOOR),
   );
 
   void _frame(Duration timeStamp) {
@@ -79,6 +84,7 @@ class _GameState extends State<Game> {
                     stage: KenStage(),
                     frameTime: frameTime,
                     player1: ryu,
+                    player2: ken,
                   ),
                 ),
               ),
@@ -90,21 +96,25 @@ class _GameState extends State<Game> {
   }
 
   KeyEventResult _keyListener(FocusNode node, KeyEvent event) {
-    final pressed = HardwareKeyboard.instance.isLogicalKeyPressed(event.logicalKey);
-    if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
-      if (pressed) {
-        ryu.changeState(FighterState.WALK_BACK);
-      } else {
-        ryu.changeState(FighterState.IDLE);
-      }
+    final pressed = HardwareKeyboard.instance.isLogicalKeyPressed(
+      event.logicalKey,
+    );
+    if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+      ryu.arrowUp(pressed);
+    } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+      ryu.arrowDown(pressed);
+    } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+      ryu.arrowLeft(pressed, ryu.direction.flip);
     } else if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
-      if (pressed) {
-        ryu.changeState(FighterState.WALK_FRONT);
-      } else {
-        ryu.changeState(FighterState.IDLE);
-      }
-    } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
-      ryu.changeState(FighterState.JUMP_UP);
+      ryu.arrowRight(pressed, ryu.direction.flip);
+    } else if (event.logicalKey == LogicalKeyboardKey.keyW) {
+      ken.arrowUp(pressed);
+    } else if (event.logicalKey == LogicalKeyboardKey.keyS) {
+      ken.arrowDown(pressed);
+    } else if (event.logicalKey == LogicalKeyboardKey.keyA) {
+      ken.arrowLeft(pressed, ken.direction.flip);
+    } else if (event.logicalKey == LogicalKeyboardKey.keyD) {
+      ken.arrowRight(pressed, ken.direction.flip);
     }
 
     return KeyEventResult.handled;

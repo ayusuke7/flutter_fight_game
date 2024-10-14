@@ -20,6 +20,7 @@ class Sprite {
   final double height;
 
   final Vector? anchor;
+  final HitBox? hitBox;
 
   double delay;
 
@@ -30,5 +31,16 @@ class Sprite {
     this.height, {
     this.anchor,
     this.delay = 0,
+    this.hitBox,
   });
+}
+
+class HitBox {
+  final double x;
+  final double y;
+
+  final double width;
+  final double height;
+
+  HitBox(this.x, this.y, this.width, this.height);
 }

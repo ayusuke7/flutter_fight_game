@@ -16,7 +16,15 @@ Parte 2
 [x] - Adicionado Estado do Player
 [x] - Adicionando Animacoes
 [x] - Adicionando Background
-[ ] - Adicionando Oponente
+
+Parte 3
+
+[x] - Adicionar KeyMap para os figther
+[X] - Adicionar SpriteData para os Sprites
+[x] - Adicionar States de JumpFront/JumpBack/Crouch
+[x] - Adicionar Oponente
+[x] - Adicionar HitBox
+[ ] - Flip direction para os Fighters
 
 ### Links uteis
 

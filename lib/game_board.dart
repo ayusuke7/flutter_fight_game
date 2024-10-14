@@ -8,10 +8,12 @@ class GameBoard extends CustomPainter {
 
   final KenStage stage;
   final Fighter player1;
+  final Fighter player2;
 
   GameBoard({
     required this.frameTime,
     required this.player1,
+    required this.player2,
     required this.stage,
   });
 
@@ -21,6 +23,9 @@ class GameBoard extends CustomPainter {
 
     player1.update(frameTime, size);
     player1.draw(canvas, size);
+
+    player2.update(frameTime, size);
+    player2.draw(canvas, size);
   }
 
   @override
