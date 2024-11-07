@@ -33,6 +33,10 @@ class Sprite {
     this.delay = 0,
     this.hitBox,
   });
+
+  ui.Rect toRect() => ui.Rect.fromLTWH(x, y, width, height);
+
+  ui.Rect toDest(double dx, double dy) => ui.Rect.fromLTWH(dx, dy, width, height);
 }
 
 class HitBox {

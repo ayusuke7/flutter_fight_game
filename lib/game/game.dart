@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_flight_game/game/camera.dart';
 import 'package:flutter_flight_game/game/constants/fighter_data.dart';
 import 'package:flutter_flight_game/game/constants/game_data.dart';
 import 'package:flutter_flight_game/game/fighters/ryu.dart';
 import 'package:flutter_flight_game/game/game_board.dart';
+import 'package:flutter_flight_game/game/overlays/hud.dart';
 import 'package:flutter_flight_game/game/stages/ken_stage.dart';
 import 'package:flutter_flight_game/game/types/frame_time.dart';
-import 'package:flutter_flight_game/game/types/vector.dart';
 
 class Game extends StatefulWidget {
   const Game({super.key});
@@ -19,15 +20,19 @@ class Game extends StatefulWidget {
 class _GameState extends State<Game> {
   final frameTime = FrameTime(0, 0);
 
-  final ryu = Ryu(
+  static final ryu = Ryu(
     direction: FighterDir.RIGHT,
-    position: Vector(50, GameData.GAME_FLOOR),
+    position: GameData.FIGHTER_POSITION_LEFT,
   );
-  final ken = Ryu(
+  static final ken = Ryu(
     name: "ken",
     direction: FighterDir.LEFT,
-    position: Vector(300, GameData.GAME_FLOOR),
+    position: GameData.FIGHTER_POSITION_RIGHT,
   );
+
+  final stage = KenStage();
+  final camera = Camera(ryu, ken);
+  final hud = Hud();
 
   void _frame(Duration timeStamp) {
     int currentTime = timeStamp.inMilliseconds;
@@ -44,6 +49,8 @@ class _GameState extends State<Game> {
   }
 
   void _gameLoop() {
+    ryu.oponnent = ken;
+    ken.oponnent = ryu;
     SchedulerBinding.instance.scheduleFrameCallback(_frame);
   }
 
@@ -74,7 +81,9 @@ class _GameState extends State<Game> {
                 child: CustomPaint(
                   size: GameData.GAME_VIEWPORT,
                   painter: GameBoard(
-                    stage: KenStage(),
+                    hud: hud,
+                    camera: camera,
+                    stage: stage,
                     frameTime: frameTime,
                     player1: ryu,
                     player2: ken,

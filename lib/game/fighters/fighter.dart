@@ -1,11 +1,14 @@
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/services.dart';
+import 'package:flutter_flight_game/game/camera.dart';
 import 'package:flutter_flight_game/game/constants/fighter_data.dart';
 import 'package:flutter_flight_game/game/constants/game_data.dart';
 import 'package:flutter_flight_game/game/types/frame_time.dart';
 import 'package:flutter_flight_game/game/types/sprite_sheet.dart';
 import 'package:flutter_flight_game/game/types/vector.dart';
+import 'package:flutter_flight_game/game/utils/collisions.dart';
 import 'package:flutter_flight_game/game/utils/key_map.dart';
 
 class Fighter with KeyMap {
@@ -16,6 +19,7 @@ class Fighter with KeyMap {
 
   FighterState fighterState;
   FighterDir direction;
+  Fighter? oponnent;
 
   int animationFrame = 0;
   int animationTimer = 0;
@@ -38,18 +42,46 @@ class Fighter with KeyMap {
     return currentAnimation[animationFrame];
   }
 
-  void update(FrameTime time, Size size) {
+  HitBox get currentHitbox {
+    return currentAnimationFrame.hitBox ?? HitBox(0, 0, 0, 0);
+  }
+
+  bool get hasCollideOponent {
+    if (oponnent == null) return false;
+
+    return Collisions.rectsOverlaps(
+      position.x + currentHitbox.x,
+      position.y + currentHitbox.y,
+      currentHitbox.width,
+      currentHitbox.height,
+      oponnent!.position.x + oponnent!.currentHitbox.x,
+      oponnent!.position.y + oponnent!.currentHitbox.y,
+      oponnent!.currentHitbox.width,
+      oponnent!.currentHitbox.height,
+    );
+  }
+
+  void update(FrameTime time, Size size, Camera camera) {
     position.x += (velocity.x * direction.side) * time.secondsPassed;
     position.y += velocity.y * time.secondsPassed;
 
+    _updateDirection();
     _updateState(time);
     _updateAnimations(time);
-    _updateStateContraints(size);
+    _updateStateContraints(size, camera);
   }
 
-  void draw(Canvas canvas, Size size) {
+  void draw(Canvas canvas, Camera camera) {
     final originX = currentAnimationFrame.anchor!.x;
     final originY = currentAnimationFrame.anchor!.y;
+
+    var paint = Paint();
+    if (name == "ken") {
+      paint.colorFilter = const ColorFilter.mode(
+        Color.fromRGBO(0, 0, 0, 1),
+        BlendMode.srcATop,
+      );
+    }
 
     canvas.save();
     canvas.scale(direction.side.toDouble(), 1);
@@ -62,17 +94,17 @@ class Fighter with KeyMap {
         currentAnimationFrame.height,
       ),
       Rect.fromLTWH(
-        (position.x * direction.side).floorToDouble() - originX,
-        position.y.floorToDouble() - originY,
+        ((position.x - camera.position.x) * direction.side).floorToDouble() - originX,
+        (position.y - camera.position.y).floorToDouble() - originY,
         currentAnimationFrame.width,
         currentAnimationFrame.height,
       ),
-      Paint(),
+      paint,
     );
     canvas.transform(Matrix4.identity().storage);
     canvas.restore();
 
-    _debug(canvas);
+    _debug(canvas, camera);
   }
 
   void _changeState(FighterState newState) {
@@ -102,15 +134,50 @@ class Fighter with KeyMap {
     }
   }
 
-  void _updateStateContraints(Size size) {
-    const maxWidth = 32.0;
+  void _updateStateContraints(Size size, Camera camera) {
+    var maxWidth = currentAnimationFrame.hitBox!.width;
 
-    if (position.x > size.width - maxWidth) {
-      position.x = size.width - maxWidth;
+    if (position.x > camera.position.x + size.width - maxWidth) {
+      position.x = camera.position.x + size.width - maxWidth;
     }
 
-    if (position.x < maxWidth) {
-      position.x = maxWidth;
+    if (position.x < camera.position.x + maxWidth) {
+      position.x = camera.position.x + maxWidth;
+    }
+
+    if (hasCollideOponent) {
+      if (position.x <= oponnent!.position.x) {
+        position.x = max(
+          (oponnent!.position.x + oponnent!.currentHitbox.x) -
+              (currentHitbox.x + currentHitbox.width),
+          camera.position.x + currentHitbox.width,
+        );
+      }
+
+      if (position.x >= oponnent!.position.x) {
+        position.x = min(
+          (oponnent!.position.x + oponnent!.currentHitbox.x + oponnent!.currentHitbox.width) +
+              (currentHitbox.width + currentHitbox.x),
+          camera.position.x + size.width - currentHitbox.width,
+        );
+      }
+    }
+  }
+
+  void _updateDirection() {
+    if (oponnent == null ||
+        ![
+          FighterState.IDLE,
+          FighterState.WALK_BACK,
+          FighterState.WALK_FRONT,
+        ].contains(fighterState)) return;
+
+    if (position.x + currentHitbox.x + currentHitbox.width <=
+        oponnent!.position.x + oponnent!.currentHitbox.x) {
+      direction = FighterDir.RIGHT;
+    } else if (position.x + currentHitbox.x >=
+        oponnent!.position.x + oponnent!.currentHitbox.x + oponnent!.currentHitbox.width) {
+      direction = FighterDir.LEFT;
     }
   }
 
@@ -207,8 +274,8 @@ class Fighter with KeyMap {
 
   void _handleJumpState(FrameTime time) {
     velocity.y += FighterData.GRAVITY * time.secondsPassed;
-    if (position.y > GameData.GAME_FLOOR) {
-      position.y = GameData.GAME_FLOOR;
+    if (position.y > GameData.STAGE_FLOOR) {
+      position.y = GameData.STAGE_FLOOR;
       _changeState(FighterState.JUMP_LAND);
     }
   }
@@ -280,23 +347,47 @@ class Fighter with KeyMap {
   }
 
   /* Debugger */
-  void _debug(Canvas canvas) {
+  void _debug(Canvas canvas, Camera camera) {
+    /* HitBox */
     if (currentAnimationFrame.hitBox != null) {
+      final color = name == "ryu"
+          ? const Color.fromARGB(255, 76, 175, 80)
+          : const Color.fromRGBO(244, 67, 54, 1);
+
       final paintHitBox = Paint()
-        ..color = (name == "ryu"
-                ? const Color.fromARGB(255, 76, 175, 80)
-                : const Color.fromRGBO(244, 67, 54, 1))
-            .withOpacity(.5)
+        ..color = color.withOpacity(.5)
         ..style = PaintingStyle.fill;
 
       canvas.drawRect(
         Rect.fromLTWH(
-          position.x + currentAnimationFrame.hitBox!.x,
-          position.y + currentAnimationFrame.hitBox!.y,
-          currentAnimationFrame.hitBox!.width,
+          position.x + (currentAnimationFrame.hitBox!.x * direction.side) - camera.position.x,
+          position.y + currentAnimationFrame.hitBox!.y - camera.position.y,
+          currentAnimationFrame.hitBox!.width * direction.side,
           currentAnimationFrame.hitBox!.height,
         ),
         paintHitBox,
+      );
+    }
+
+    // Origin Point
+    if (currentAnimationFrame.anchor != null) {
+      final paintAnchor = Paint()
+        ..color = const Color.fromRGBO(255, 255, 255, 1)
+        ..strokeWidth = 1.0
+        ..style = PaintingStyle.stroke;
+
+      final sideX = (position.x - camera.position.x).floorToDouble();
+      final sideY = (position.y - camera.position.y).floorToDouble();
+
+      canvas.drawLine(
+        Offset(sideX - 4.5, sideY),
+        Offset(sideX + 4.5, sideY),
+        paintAnchor,
+      );
+      canvas.drawLine(
+        Offset(sideX, sideY - 4.5),
+        Offset(sideX, sideY + 4.5),
+        paintAnchor,
       );
     }
   }

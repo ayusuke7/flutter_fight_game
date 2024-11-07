@@ -27,11 +27,11 @@ Parte 3
 
 Parte 4
 
-[ ] - Adicionar Colisoes
-[ ] - Adicionar Overlays HUD e Timer
-[ ] - Flip Direcoes dos Players
-[ ] - Adicionar Camera
-[ ] - Criar efeito de Parallax Scrolling
+[x] - Adicionar Colisoes
+[x] - Adicionar Overlays HUD e Timer
+[x] - Flip Direcoes dos Players
+[x] - Adicionar Camera
+[x] - Criar efeito de Parallax Scrolling
 
 ### Links uteis
 
