@@ -1,6 +1,6 @@
 import 'dart:ui' as ui;
 
-import 'package:flutter_flight_game/types/vector.dart';
+import 'package:flutter_flight_game/game/types/vector.dart';
 
 class SpriteSheetData {
   final ui.Image spriteSheet;

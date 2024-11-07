@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_flight_game/fighters/fighter.dart';
-import 'package:flutter_flight_game/stages/ken_stage.dart';
-import 'package:flutter_flight_game/types/frame_time.dart';
+import 'package:flutter_flight_game/game/fighters/fighter.dart';
+import 'package:flutter_flight_game/game/stages/stage.dart';
+import 'package:flutter_flight_game/game/types/frame_time.dart';
 
 class GameBoard extends CustomPainter {
   final FrameTime frameTime;
-
-  final KenStage stage;
   final Fighter player1;
   final Fighter player2;
+  final Stage stage;
 
   GameBoard({
     required this.frameTime,

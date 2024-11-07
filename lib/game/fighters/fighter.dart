@@ -1,12 +1,12 @@
 import 'dart:ui';
 
 import 'package:flutter/services.dart';
-import 'package:flutter_flight_game/constants/fighter_data.dart';
-import 'package:flutter_flight_game/constants/game_data.dart';
-import 'package:flutter_flight_game/types/frame_time.dart';
-import 'package:flutter_flight_game/types/sprite_sheet.dart';
-import 'package:flutter_flight_game/types/vector.dart';
-import 'package:flutter_flight_game/utils/key_map.dart';
+import 'package:flutter_flight_game/game/constants/fighter_data.dart';
+import 'package:flutter_flight_game/game/constants/game_data.dart';
+import 'package:flutter_flight_game/game/types/frame_time.dart';
+import 'package:flutter_flight_game/game/types/sprite_sheet.dart';
+import 'package:flutter_flight_game/game/types/vector.dart';
+import 'package:flutter_flight_game/game/utils/key_map.dart';
 
 class Fighter with KeyMap {
   final SpriteSheetData spriteSheetData;

@@ -24,7 +24,14 @@ Parte 3
 [x] - Adicionar States de JumpFront/JumpBack/Crouch
 [x] - Adicionar Oponente
 [x] - Adicionar HitBox
-[ ] - Flip direction para os Fighters
+
+Parte 4
+
+[ ] - Adicionar Colisoes
+[ ] - Adicionar Overlays HUD e Timer
+[ ] - Flip Direcoes dos Players
+[ ] - Adicionar Camera
+[ ] - Criar efeito de Parallax Scrolling
 
 ### Links uteis
 

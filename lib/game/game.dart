@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_flight_game/constants/fighter_data.dart';
-import 'package:flutter_flight_game/constants/game_data.dart';
-import 'package:flutter_flight_game/fighters/ryu.dart';
-import 'package:flutter_flight_game/game_board.dart';
-import 'package:flutter_flight_game/stages/ken_stage.dart';
-import 'package:flutter_flight_game/types/frame_time.dart';
-import 'package:flutter_flight_game/types/vector.dart';
+import 'package:flutter_flight_game/game/constants/fighter_data.dart';
+import 'package:flutter_flight_game/game/constants/game_data.dart';
+import 'package:flutter_flight_game/game/fighters/ryu.dart';
+import 'package:flutter_flight_game/game/game_board.dart';
+import 'package:flutter_flight_game/game/stages/ken_stage.dart';
+import 'package:flutter_flight_game/game/types/frame_time.dart';
+import 'package:flutter_flight_game/game/types/vector.dart';
 
 class Game extends StatefulWidget {
   const Game({super.key});
@@ -59,13 +59,6 @@ class _GameState extends State<Game> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.deepPurple,
-        ),
-        useMaterial3: true,
-      ),
       home: Scaffold(
         appBar: AppBar(
           title: Text("FPS: ${frameTime.fps}"),

@@ -1,8 +1,8 @@
-import 'package:flutter_flight_game/constants/fighter_data.dart';
-import 'package:flutter_flight_game/constants/sprite_data.dart';
-import 'package:flutter_flight_game/fighters/fighter.dart';
-import 'package:flutter_flight_game/types/sprite_sheet.dart';
-import 'package:flutter_flight_game/utils/assets.dart';
+import 'package:flutter_flight_game/game/constants/fighter_data.dart';
+import 'package:flutter_flight_game/game/constants/sprite_data.dart';
+import 'package:flutter_flight_game/game/fighters/fighter.dart';
+import 'package:flutter_flight_game/game/types/sprite_sheet.dart';
+import 'package:flutter_flight_game/game/utils/assets.dart';
 
 class Ryu extends Fighter {
   Ryu({

@@ -1,5 +1,5 @@
-import 'package:flutter_flight_game/types/sprite_sheet.dart';
-import 'package:flutter_flight_game/types/vector.dart';
+import 'package:flutter_flight_game/game/types/sprite_sheet.dart';
+import 'package:flutter_flight_game/game/types/vector.dart';
 
 enum SpriteKey {
   IDLE,
